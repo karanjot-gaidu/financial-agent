@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie"; // Import js-cookie to handle cookies
 
 export default function Home() {
-
   const [isLogin, setIsLogin] = useState(false);
   const router = useRouter();
 
@@ -15,7 +15,22 @@ export default function Home() {
 
     if (isLogin) {
       try {
-        router.push(`/survey?email=${encodeURIComponent(email)}`);
+        // Handle login
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (data) {
+          // Set cookies after successful login
+          Cookies.set("email", email, { expires: 7 }); // Set email cookie for 7 days
+          Cookies.set("password", password, { expires: 7 }); // Set password cookie for 7 days (you should hash this in production)
+          router.push(`/survey?email=${encodeURIComponent(email)}`);
+        } else {
+          alert(data.error || "Failed to log in");
+        }
       } catch (error) {
         console.error("Login failed:", error);
         alert("Failed to log in. Please try again.");
@@ -27,7 +42,6 @@ export default function Home() {
         const phone = formData.get("phone") as string;
         const countryCode = formData.get("countryCode") as string;
         const confirmPassword = formData.get("confirmPassword") as string;
-        console.log(firstName, lastName, phone, countryCode, confirmPassword);
 
         // Validate form inputs
         if (!firstName || !lastName || !email || !password || !phone || !countryCode) {
@@ -47,19 +61,18 @@ export default function Home() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "checkUserExists", email }),
           });
-        
+
           const data = await response.json();
           return data.exists;
         };
-        
+
         const userExists = await checkUser(email);
         if (userExists) {
           alert("User with this email already exists!");
           return;
         }
 
-        // insert user into database
-
+        // Insert user into database
         const createUser = async (user: {
           firstName: string;
           lastName: string;
@@ -73,22 +86,22 @@ export default function Home() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "createUser", ...user }),
           });
-        
+
           const data = await response.json();
           if (!response.ok) {
             throw new Error(data.error || "Failed to create user");
           }
-        
+
           return data.message;
         };
-        
+
         await createUser({
           firstName,
           lastName,
           email,
           password,
           phone,
-          countryCode
+          countryCode,
         });
 
         alert("Account created successfully! Please log in.");

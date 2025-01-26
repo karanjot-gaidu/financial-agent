@@ -56,3 +56,10 @@ export async function insertSurvey(userId: number, formData: any) {
         throw error; // Re-throw the error after logging
     }
 }
+
+export async function login(email: string, password: string) {
+    const user = await sql`
+        SELECT * FROM personal_details WHERE email_address = ${email} AND password = ${password}
+    `;
+    return user.rows.length > 0;
+}

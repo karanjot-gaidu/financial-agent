@@ -1,6 +1,6 @@
 "use client";
 import { sql } from "@vercel/postgres";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 async function saveFormToDatabase(formData: any, userEmail: string) {
@@ -61,8 +61,10 @@ async function saveFormToDatabase(formData: any, userEmail: string) {
 export default function Survey() {
     const searchParams = useSearchParams();
     const userEmail = searchParams.get('email');
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
+    const router = useRouter();
+    const [currentStep, setCurrentStep] = useState(0);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [formData, setFormData] = useState({
     country: '',
     streetNo: '',
     streetName: '',
@@ -651,21 +653,43 @@ export default function Survey() {
    * Handles the form submission by saving the data and determining the risk profile.
    */
   const handleSubmit = async () => {
-    // Calculate the risk profile
-    const riskProfile = calculateRiskProfile(formData);
-    console.log('User Risk Profile:', riskProfile);
+    try {
+      // Calculate the risk profile
+      const riskProfile = calculateRiskProfile(formData);
+      console.log('User Risk Profile:', riskProfile);
 
-    // Include the riskProfile in the data to be saved
-    const dataToSave = { ...formData, riskProfile };
+      // Include the riskProfile in the data to be saved
+      const dataToSave = { ...formData, riskProfile };
 
-    const success = await saveFormToDatabase(dataToSave, userEmail as string);
-    if (success) {
-      alert('Form submitted successfully!');
-      // Reset form or redirect
-    } else {
-      alert('Error submitting form. Please try again.');
+      const success = await saveFormToDatabase(dataToSave, userEmail as string); // Update this based on your insertSurvey implementation
+      if (success) {
+        setIsSubmitted(true); // Update state to show thank-you message
+      } else {
+        alert('Error submitting form. Please try again.');
+      }
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("Failed to submit the survey. Please try again.");
     }
   };
+
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
+        <div className="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg">
+          <h1 className="text-2xl font-bold text-center text-gray-100 mb-8">Thank You for Completing the Survey!</h1>
+          <div className="flex justify-center">
+            <button
+              onClick={() => router.push('/')}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Go Back to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
@@ -701,7 +725,9 @@ export default function Survey() {
             </button>
             <button
               type="button"
-              onClick={currentStep === formSteps.length - 1 ? handleSubmit : () => setCurrentStep((prev: number) => Math.min(formSteps.length - 1, prev + 1))}
+              onClick={
+                currentStep === formSteps.length - 1 ? handleSubmit : () => setCurrentStep((prev: number) => Math.min(formSteps.length - 1, prev + 1))
+              }
               className={`px-4 py-2 rounded-md ${
                 currentStep === formSteps.length - 1
                   ? 'bg-green-600 text-white hover:bg-green-700'
