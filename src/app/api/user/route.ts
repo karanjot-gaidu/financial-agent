@@ -1,5 +1,4 @@
 "use server"
-import { NextApiRequest, NextApiResponse } from "next";
 import { checkUserExists, createUser, getUserId, insertSurvey } from "../../db"; // Import functions from db.ts
 import { NextResponse } from "next/server";
 
