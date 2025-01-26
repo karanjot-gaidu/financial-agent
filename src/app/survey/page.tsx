@@ -77,7 +77,11 @@ export default function Survey() {
     totalIncome: '',
     isResident: '',
     hasSin: '',
-    sinExpiryDate: ''
+    sinExpiryDate: '',
+    question1: '',
+    question2: '',
+    question3: '',
+    riskProfile: '',
   });
 
   // **Moved Hooks for Date of Birth**
@@ -135,6 +139,19 @@ export default function Survey() {
           />
         </div>
         <div>
+        <label htmlFor="unitApt" className="block text-sm font-medium text-gray-400">
+          Unit/Apt (Optional)
+        </label>
+        <input
+          type="text"
+          id="unitApt"
+          value={formData.unitApt}
+          onChange={(e) => handleInputChange('unitApt', e.target.value)}
+          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
+      </div>
+      <div>
           <label htmlFor="streetName" className="block text-sm font-medium text-gray-400">
             Street Name *
           </label>
@@ -147,19 +164,7 @@ export default function Survey() {
             className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
-      </div>
-      <div>
-        <label htmlFor="unitApt" className="block text-sm font-medium text-gray-400">
-          Unit/Apt (Optional)
-        </label>
-        <input
-          type="text"
-          id="unitApt"
-          value={formData.unitApt}
-          onChange={(e) => handleInputChange('unitApt', e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
+      
       <div>
         <label htmlFor="cityTown" className="block text-sm font-medium text-gray-400">
           City/Town *
@@ -173,9 +178,10 @@ export default function Survey() {
           className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
-      <div>
-        <label htmlFor="provinceTerritory" className="block text-sm font-medium text-gray-400">
-          Province/Territory *
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="provinceTerritory" className="block text-sm font-medium text-gray-400">
+            Province/Territory *
         </label>
         <input
           type="text"
@@ -198,6 +204,7 @@ export default function Survey() {
           required
           className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
+      </div>
       </div>
     </div>
   );
@@ -455,7 +462,7 @@ export default function Survey() {
                 onChange={(e) => updateDate(e.target.value, sinMonth, sinYear)}
                 className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="">Select Day</option>
+                <option value="" disabled>Select Day</option>
                 {[...Array(31)].map((_, i) => (
                   <option key={i + 1} value={String(i + 1).padStart(2, '0')}>{i + 1}</option>
                 ))}
@@ -471,7 +478,7 @@ export default function Survey() {
                 onChange={(e) => updateDate(sinDay, e.target.value, sinYear)}
                 className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="">Select Month</option>
+                <option value="" disabled>Select Month</option>
                 {[...Array(12)].map((_, i) => (
                   <option key={i + 1} value={String(i + 1).padStart(2, '0')}>{i + 1}</option>
                 ))}
@@ -487,7 +494,7 @@ export default function Survey() {
                 onChange={(e) => updateDate(sinDay, sinMonth, e.target.value)}
                 className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="">Select Year</option>
+                <option value="" disabled>Select Year</option>
                 {[...Array(10)].map((_, i) => {
                   const yearVal = String(new Date().getFullYear() + i);
                   return <option key={yearVal} value={yearVal}>{yearVal}</option>;
@@ -500,6 +507,64 @@ export default function Survey() {
     );
   };
 
+  const renderQuestionForm = () => (
+    <div className="space-y-6">
+      <div>
+        <label htmlFor="question1" className="block text-sm font-medium text-gray-400">
+        What is the main goal of your investments?
+        </label>
+        <select
+          id="question1"
+          value={formData.question1}
+          onChange={(e) => handleInputChange('question1', e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="" disabled>Select Goal</option>
+          <option value="A">I want to protect my money with minimal risk, even if returns are lower</option>
+          <option value="B">I want a balance of moderate risk and moderate returns</option>
+          <option value="C">I want to maximize returns and am willing to take on significant risk.</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="question2" className="block text-sm font-medium text-gray-400">
+        How would you react if your portfolio lost 15% of its value in one month?
+        </label>
+        <select
+          id="question2"
+          value={formData.question2}
+          onChange={(e) => handleInputChange('question2', e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="" disabled>Select Reaction</option>
+          <option value="A">I'd sell immediately to avoid further losses</option>
+          <option value="B">I'd wait it out, assuming markets will recover.</option>
+          <option value="C">I'd consider buying more because the market is down.</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="question3" className="block text-sm font-medium text-gray-400">
+        On a scale of 1–5, how comfortable are you with taking a higher risk if it means a higher potential reward?
+        </label>
+        <select
+          id="question3"
+          value={formData.question3}
+          onChange={(e) => handleInputChange('question3', e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="" disabled>Select Comfort Level</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+  );
+
   const formSteps = [
     { title: 'Address Details', component: renderAddressForm },
     { title: 'Date of Birth', component: renderDateOfBirthForm },
@@ -509,10 +574,91 @@ export default function Survey() {
     { title: 'Total Income', component: renderTotalIncomeForm },
     { title: 'Residency Status', component: renderResidentForm },
     { title: 'SIN Information', component: renderSinForm },
+    { title: 'Questions', component: renderQuestionForm },
   ];
 
+  /**
+   * Calculates the user's risk profile based on their survey responses.
+   *
+   * @param {Object} formData - The user's responses to the survey.
+   * @returns {string} - The determined risk profile: "Risk Averse", "Moderate Risk", or "Higher Risk".
+   */
+  const calculateRiskProfile = (formData: any): string => {
+    let riskAverse = 0;
+    let moderateRisk = 0;
+    let higherRisk = 0;
+
+    // Mapping for Question 1
+    switch (formData.question1) {
+      case 'A':
+        riskAverse += 1;
+        break;
+      case 'B':
+        moderateRisk += 1;
+        break;
+      case 'C':
+        higherRisk += 1;
+        break;
+      default:
+        break;
+    }
+
+    // Mapping for Question 2
+    switch (formData.question2) {
+      case 'A':
+        riskAverse += 1;
+        break;
+      case 'B':
+        moderateRisk += 1;
+        break;
+      case 'C':
+        higherRisk += 1;
+        break;
+      default:
+        break;
+    }
+
+    // Mapping for Question 3
+    switch (formData.question3) {
+      case '1':
+      case '2':
+        riskAverse += 1;
+        break;
+      case '3':
+        moderateRisk += 1;
+        break;
+      case '4':
+      case '5':
+        higherRisk += 1;
+        break;
+      default:
+        break;
+    }
+
+    // Determine the highest score
+    const maxScore = Math.max(riskAverse, moderateRisk, higherRisk);
+
+    if (maxScore === riskAverse) {
+      return 'Risk Averse';
+    } else if (maxScore === moderateRisk) {
+      return 'Moderate Risk';
+    } else {
+      return 'Higher Risk';
+    }
+  };
+
+  /**
+   * Handles the form submission by saving the data and determining the risk profile.
+   */
   const handleSubmit = async () => {
-    const success = await saveFormToDatabase(formData, userEmail as string);
+    // Calculate the risk profile
+    const riskProfile = calculateRiskProfile(formData);
+    console.log('User Risk Profile:', riskProfile);
+
+    // Include the riskProfile in the data to be saved
+    const dataToSave = { ...formData, riskProfile };
+
+    const success = await saveFormToDatabase(dataToSave, userEmail as string);
     if (success) {
       alert('Form submitted successfully!');
       // Reset form or redirect
@@ -523,7 +669,7 @@ export default function Survey() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-8">
-      <div className="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md">
+      <div className="bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg sm:max-w-xl md:max-w-2xl">
         <h1 className="text-2xl font-bold text-center text-gray-100 mb-8">
           {formSteps[currentStep].title}
         </h1>
