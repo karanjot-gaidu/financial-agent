@@ -47,6 +47,7 @@ export async function insertSurvey(userId: number, formData: any) {
           question_1 = ${formData.question1},
           question_2 = ${formData.question2},
           question_3 = ${formData.question3},
+          experience = ${formData.experience},
           risk_profile = ${formData.riskProfile}
         WHERE id = ${userId}
       `;

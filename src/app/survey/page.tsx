@@ -82,6 +82,7 @@ function SurveyComponent() {
     question1: '',
     question2: '',
     question3: '',
+    experience: '',
     riskProfile: '',
   });
 
@@ -561,6 +562,23 @@ function SurveyComponent() {
           <option value="3">3</option>
           <option value="4">4</option>
           <option value="5">5</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="experience" className="block text-sm font-medium text-gray-400">
+            How experienced are you with investing?
+        </label>
+        <select
+          id="experience"
+          value={formData.experience}
+          onChange={(e) => handleInputChange('experience', e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 shadow-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="" disabled>Select Experience</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Expert">Expert</option>
         </select>
       </div>
     </div>
