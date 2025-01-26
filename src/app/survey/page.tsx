@@ -1,7 +1,6 @@
 "use client";
-import { sql } from "@vercel/postgres";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 async function saveFormToDatabase(formData: any, userEmail: string) {
   try {
@@ -58,7 +57,7 @@ async function saveFormToDatabase(formData: any, userEmail: string) {
   }
 }
 
-export default function Survey() {
+function SurveyComponent() {
     const searchParams = useSearchParams();
     const userEmail = searchParams.get('email');
     const router = useRouter();
@@ -658,8 +657,8 @@ export default function Survey() {
       const riskProfile = calculateRiskProfile(formData);
       console.log('User Risk Profile:', riskProfile);
 
-      // Include the riskProfile in the data to be saved
-      const dataToSave = { ...formData, riskProfile };
+    // Include the riskProfile in the data to be saved
+    const dataToSave = { ...formData, riskProfile };
 
       const success = await saveFormToDatabase(dataToSave, userEmail as string); // Update this based on your insertSurvey implementation
       if (success) {
@@ -742,3 +741,11 @@ export default function Survey() {
     </div>
   );
 }
+
+export default function Survey() {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <SurveyComponent />
+      </Suspense>
+    );
+  }

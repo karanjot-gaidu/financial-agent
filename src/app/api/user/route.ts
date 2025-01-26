@@ -38,6 +38,7 @@ export async function POST(req: Request) {
 }
 
 // Handler for checking if a user exists
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleCheckUserExists(body: any) {
   const { email } = body;
 
